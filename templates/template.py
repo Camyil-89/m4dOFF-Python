@@ -39,12 +39,8 @@ class Template():
         return f'{path_folder}{os.sep}{self.name}_{self.uid}.xml'
 
     def __from_string(self, text: str):
-        xml_string = re.sub('>[\s
-]+<', '><', text)
+        xml_string = re.sub('>[\s\n\r]+<', '><', text)
         return ET.fromstring(xml_string)
-    def __add_attribute(self, path, property, value):
-        element = self.__find_element(path)
-        element.attrib.update({f"{property}": f"{value}"})
     def __find_element(self, path):
         return self.root.find(path)
 
