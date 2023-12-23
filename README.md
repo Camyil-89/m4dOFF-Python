@@ -11,6 +11,68 @@ m4dOFF позволяет автоматизировать создание ма
 ```python
 self.parser.get_value(property, index_table, index_row = 0, index_cell = -1, idex_property = 0)
 ```
+
+Позволяет вставить часть МЧД в XML формате.
+```python
+self.__from_string(text)
+```
+> Пример форматирования с помощью self.__from_string
+> ```python
+>document = ET.SubElement(self.root, 'Документ')
+>trust = ET.SubElement(document, 'Довер')
+>trust.append(self.__from_string(f'''
+> <СвДов ВидДовер="1" ПрПередов="1" ВнНомДовер="{self.parser.get_value("Внутренний номер", 0)}" НомДовер="{self.uid}" ДатаВыдДовер="{self.parser.get_value("Дата выдачи", 0)}" СрокДейст="{self.parser.get_value("Срок действия", 0)}">
+>         <СведСист>https://m4d.nalog.gov.ru/EMCHD/check-status?guid={self.uid}</СведСист>
+></СвДов>'''))
+>```
+
+Добавляет аттрибут к тегу который вы укажите.
+```python
+self.__add_attribute(path, property, value):
+```
+> Пример
+> ```python
+> self.__add_attribute("./Документ/Довер", "Тест", "Значение")
+> # результат
+> '''
+> <Довер Тест="Значение">
+> </Довер>
+> '''
+> ```
+
+Ищет тег по пути в XML файле.
+```python
+self.__find_element(path)
+```
+
+Для обработки отчества нужно использовать данную функцию. Она позволяет определять есть ли у человека отчество или нет. В __get_patronymic можно передовать как массив так и обычную строку с отчеством.
+```python
+self.__get_patronymic(fio_parts)
+```
+> Пример
+> ```python
+> document = ET.SubElement(self.root, 'Документ')
+> trust = ET.SubElement(document, 'Довер')
+> fio = self.parser.get_value("ФИО", 0).split(" ")
+> trust.append(self.__from_string(f'''<ФИО Фамилия="{fio[0]}" Имя="{fio[1]}" {self.__get_patronymic(fio)}/>'''))
+> # результат если отчество есть
+> '''
+>  <ФИО Фамилия="ИВАНОВ" Имя="ИВАН" Отчество="ИВАНОВИЧ" />
+> '''
+> ```
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Свой шаблон
 Для создания шаблона необходимо:
 - Создать файл [имя файла].py
