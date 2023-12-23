@@ -6,10 +6,6 @@ import executing
 from tkinter import messagebox
 import logging
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(pathname)s:%(lineno)d %(levelname)s [Function: %(funcName)s] %(message)s',
-                    datefmt='%d-%b-%y %H:%M:%S')
-
 
 class App(tk.Tk):
     def __init__(self):
@@ -53,10 +49,33 @@ class App(tk.Tk):
 
         self.log_textbox = tk.Text(self, height=15)
         self.log_textbox.grid(row=2, column=0, columnspan=2, pady=10, padx=10, sticky='nsew')
+        self.log_textbox.tag_configure('xmltag', foreground='red')
+        self.log_textbox.bind("<Key>", self.on_text_insertion)  # Блокировка ввода с клавиатуры
 
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
+    def highlight(self):
+        self.log_textbox.tag_remove('highlight', '1.0', tk.END)  # Удаляем предыдущую подсветку
+        start_index = '1.0'
+        while True:
+            # Ищем начало следующего элемента "None"
+            start_index = self.log_textbox.search('"None"', start_index, stopindex=tk.END)
+            if not start_index:  # Если больше нет вхождений, прерываем цикл.
+                break
+            end_index = f'{start_index}+{len("None") + 2}c'
+
+            # Добавляем тег подсветки от начала до конца каждого найденного элемента "None"
+            self.log_textbox.tag_add('highlight', start_index, end_index)
+
+            # Перемещаемся вперед для поиска следующих вхождений
+            start_index = end_index
+
+        # Настраиваем визуальный стиль подсветки (например, желтый фон)
+        self.log_textbox.tag_config("highlight", background="red")
+
+    def on_text_insertion(self, *args):
+        return "break"
     def get_files_from_directory(self, directory_path):
         try:
             # Получаем список содержимого в указанном каталоге
@@ -80,7 +99,7 @@ class App(tk.Tk):
                 temp = exe.get_template(f"{os.getcwd()}{os.sep}templates{os.sep}{i}")
                 items.append(temp.get("Template")("get_name").name_template)
             except Exception as ex:
-                logging.error(ex)
+                logging.exception(ex)
                 messagebox.showerror("Ошибка", f"Произошла ошибка!\n{i}\n{ex}")
         self.template_combobox['values'] = items
         if len(items) > 0:
@@ -98,7 +117,7 @@ class App(tk.Tk):
                     return f"{os.getcwd()}{os.sep}templates{os.sep}{i}"
             except Exception as ex:
                 messagebox.showerror("Ошибка", f"Произошла ошибка!\n{i}\n{ex}")
-                logging.error(ex)
+                logging.exception(ex)
 
     def select_docx_files(self):
         docx_filenames = filedialog.askopenfilenames(filetypes=[("Word documents", "*.docx")])
@@ -119,7 +138,7 @@ class App(tk.Tk):
                     self.xml_files_listbox.insert(tk.END, i)
             except Exception as ex:
                 messagebox.showerror("Ошибка", f"Произошла ошибка!\n{ex}")
-                logging.error(ex)
+                logging.exception(ex)
 
     def show_xml_content(self, event):
         selection = event.widget.curselection()
@@ -130,7 +149,7 @@ class App(tk.Tk):
                 content = file.read()
                 self.log_textbox.delete(1.0, tk.END)
                 self.log_textbox.insert(tk.END, content)
-
+            self.highlight()
 
 def start_gui():
     app = App()

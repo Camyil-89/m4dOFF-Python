@@ -1,26 +1,5 @@
 import xml.etree.ElementTree as ET
 from uuid import uuid4
-import datetime
-import os
-import xml.etree.ElementTree as ET
-from uuid import uuid4
-from xml.dom import minidom
-import datetime
-from parser_docx import Parser
-import re
-import logging
-
-class Executing():
-    def __init__(self):
-        try:
-            os.mkdir("templates")
-        except:
-            pass
-        self.__create_template()
-    def __create_template(self):
-        with open("./templates/template.py", "w", encoding="utf-8") as file:
-            file.write("""import xml.etree.ElementTree as ET
-from uuid import uuid4
 from xml.dom import minidom
 import datetime
 from parser_docx import Parser
@@ -60,7 +39,7 @@ class Template():
         return f'{path_folder}{os.sep}{self.name}_{self.uid}.xml'
 
     def __from_string(self, text: str):
-        xml_string = re.sub('>[\s\\n\\r]+<', '><', text)
+        xml_string = re.sub('>[\s\n\r]+<', '><', text)
         return ET.fromstring(xml_string)
     def __find_element(self, path):
         return self.root.find(path)
@@ -72,19 +51,3 @@ class Template():
         :return:
         '''
         pass
-""")
-    def __read_file(self, path):
-        with open(path, "r", encoding="utf-8") as file:  # Используем бинарный режим записи
-            return file.read()
-    def load_template(self, path_to_template, files, path_to_folder):
-        local_vars = {}
-        exec(self.__read_file(path_to_template), globals(), local_vars)
-        for path in files:
-            template = local_vars.get("Template")(path)
-            template.custom()
-            yield template.save(path_to_folder)
-
-    def get_template(self, path_to_template):
-        local_vars = {}
-        exec(self.__read_file(path_to_template), globals(), local_vars)
-        return local_vars

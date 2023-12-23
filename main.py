@@ -3,6 +3,7 @@ from executing import Executing
 import gui
 import argparse
 import sys
+import logging
 
 def create_folders():
     try:
@@ -17,6 +18,9 @@ def create_folders():
 
 def main():
     create_folders()
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(pathname)s:%(lineno)d %(levelname)s [Function: %(funcName)s] %(message)s',
+                        datefmt='%d-%b-%y %H:%M:%S')
 
 
 def start_cmd(path_to_source, path_to_output, name_template):
