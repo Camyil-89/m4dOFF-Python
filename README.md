@@ -79,3 +79,4 @@ self.__get_passport_number(number)
         :return:
         '''
 ```
+## [Пример](https://github.com/Camyil-89/m4dOFF/tree/master/examples)
