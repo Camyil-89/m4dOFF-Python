@@ -12,6 +12,7 @@ class App(tk.Tk):
         super().__init__()
 
         self.title('m4dOFF')
+        self.iconbitmap("icon.ico")
         # Размеры окна
         window_width = 800
         window_height = 600
