@@ -363,7 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 
-output
-source
-templates
-.idea
+output/
+source/
+templates/
+.idea/
